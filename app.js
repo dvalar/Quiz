@@ -14,6 +14,8 @@ var routes = require('./routes/index');
 
 var app = express();
 
+var tiempologout  = 15000;
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -41,6 +43,31 @@ app.use(function(req, res, next) {
   // Hacer visible req.session en las vistas
   res.locals.session = req.session;
   next();
+});
+
+
+app.use(function(req, res, next){
+
+ // var ahora = Date.now();
+
+  if (req.session.user)
+  {
+     if ((Date.now() - req.session.ultimaentrada) >= tiempologout){
+       
+       req.session.ultimaentrada=Date.now();
+       res.redirect('/logout');
+     
+     } 
+     else {
+     
+       req.session.ultimaentrada=Date.now();
+       next();
+     
+     }
+  } else {
+
+    next();
+  }
 });
 
 
